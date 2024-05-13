@@ -45,17 +45,46 @@ if not(path==""):
         
     with col2:
         df = peeker.get_collection_data(collection_selected, dataframe=True)
-
         st.markdown(f"<b>Data in </b>*{collection_selected}*", unsafe_allow_html=True)
-        st.dataframe(df, use_container_width=True, height=300)
+        
+        if 'embeddings' in df.columns:
+            df.drop(columns=['embeddings'], inplace=True)
+        if 'documents' in df.columns:
+            df.drop(columns=['documents'], inplace=True)
+        if 'uris' in df.columns:
+            df.drop(columns=['uris'], inplace=True)
+        if 'data' in df.columns:
+            df.drop(columns=['data'], inplace=True)
+        
+       # Insert a delete column with checkboxes
+        df['Delete'] = [st.checkbox("", key=str(index)) for index in range(len(df))]
+
+        # Reorder columns to include the "Delete" column along with the rest of the columns
+        columns = df.columns.tolist()
+        columns.remove('Delete')
+        columns.insert(0, 'Delete')
+        df = df[columns]
+
+        st.dataframe(df)
+        
+        st.data_editor(df, use_container_width=True, height=300, num_rows="dynamic")
         
     st.divider()
 
-    query = st.text_input("Enter Query to get 3 similar texts", placeholder="get 3 similar texts")
-    if query:
-        result_df = peeker.query(query, collection_selected, dataframe=True)
+    # Button to delete selected rows
+    if st.button('Delete'):
+        # Get selected rows
+        selected_rows = df.loc[df['Delete'] == True]  # Retrieve rows where 'Delete' column is True
+        print("Selected rows:", selected_rows)
+        to_delete_ids = selected_rows['ids'].tolist()  # Assuming 'id' is the column containing unique identifiers
+        print("IDs to delete:", to_delete_ids)
+        # Delete selected rows from the database
+        peeker.delete_rows(collection_selected, ids=to_delete_ids)
         
-        st.dataframe(result_df, use_container_width=True)
+        # Reload the data after deletion
+        df = peeker.get_collection_data(collection_selected, dataframe=True)
+        
+        st.success("Selected rows deleted successfully.")
 
 else:
     st.subheader("Enter Valid Full Persist Path")

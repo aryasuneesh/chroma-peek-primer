@@ -5,7 +5,7 @@ class ChromaPeek:
     def __init__(self, path):
         self.client = chromadb.PersistentClient(path)
 
-    ## function that returs all collection's name
+    ## function that returns all collection's names
     def get_collections(self):
         collections = []
 
@@ -14,7 +14,7 @@ class ChromaPeek:
         
         return collections
     
-    ## function to return documents/ data inside the collection
+    ## function to return documents/data inside the collection
     def get_collection_data(self, collection_name, dataframe=False):
         data = self.client.get_collection(name=collection_name).get()
         if dataframe:
@@ -36,3 +36,12 @@ class ChromaPeek:
         if dataframe:
             return pd.DataFrame(out)
         return out
+    
+    ## function to delete selected rows from the collection
+    def delete_rows(self, collection_name, ids=None):
+        if ids:
+            collection = self.client.get_collection(name=collection_name)
+            collection.delete(ids=ids)
+        else:
+            raise ValueError("You must provide IDs to delete.")
+
