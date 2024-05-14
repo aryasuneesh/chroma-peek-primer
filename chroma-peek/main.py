@@ -57,7 +57,7 @@ if not(path==""):
             df.drop(columns=['data'], inplace=True)
         
        # Insert a delete column with checkboxes
-        df['Delete'] = [st.checkbox("", key=str(index)) for index in range(len(df))]
+        df['Delete'] = [st.checkbox(f"{df['ids'][index]} + {df['metadatas'][index]}", key=str(index)) for index in range(len(df))]
 
         # Reorder columns to include the "Delete" column along with the rest of the columns
         columns = df.columns.tolist()
@@ -65,7 +65,7 @@ if not(path==""):
         columns.insert(0, 'Delete')
         df = df[columns]
 
-        st.dataframe(df)
+        # st.dataframe(df)
         
         st.data_editor(df, use_container_width=True, height=300, num_rows="dynamic")
         
