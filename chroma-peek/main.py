@@ -17,7 +17,8 @@ st.markdown(""" <style>
             unsafe_allow_html=True)
 ############
 
-st.title("Chroma Peek 👀")
+
+st.title("Chroma-Cleaner")
 
 # get uri of the persist directory
 path = ""
@@ -72,12 +73,12 @@ if not(path==""):
     st.divider()
 
     # Button to delete selected rows
-    if st.button('Delete'):
+    if col1.button('Delete'):
         # Get selected rows
         selected_rows = df.loc[df['Delete'] == True]  # Retrieve rows where 'Delete' column is True
-        print("Selected rows:", selected_rows)
+        # print("Selected rows:", selected_rows)
         to_delete_ids = selected_rows['ids'].tolist()  # Assuming 'id' is the column containing unique identifiers
-        print("IDs to delete:", to_delete_ids)
+        # print("IDs to delete:", to_delete_ids)
         # Delete selected rows from the database
         peeker.delete_rows(collection_selected, ids=to_delete_ids)
         
